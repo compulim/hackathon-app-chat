@@ -11,29 +11,29 @@ const ROOT_CSS = css({
   },
 
   '.auto-resize-text-area__doppelganger': {
-    color: 'blue',
-    opacity: 0.5,
+    color: 'transparent',
     minHeight: '1em',
-    whiteSpace: 'break-spaces'
+    whiteSpace: 'pre-line'
   },
 
   '.auto-resize-text-area__highlight-text': {
-    backgroundColor: 'yellow'
+    backgroundColor: 'PaleGreen',
+    borderRadius: 4
   },
 
   '.auto-resize-text-area__text-area': {
     appearance: 'none',
     background: 'transparent',
     border: 0,
-    color: 'red',
+    color: 'inherit',
     fontFamily: 'inherit',
     fontSize: 'inherit',
     height: '100%',
     left: 0,
-    opacity: 0.5,
     outline: 0,
     padding: 0,
     position: 'absolute',
+    resize: 'none',
     textAlign: 'inherit',
     top: 0,
     width: '100%'
@@ -116,6 +116,7 @@ const AutoResizeTextArea = ({ className, highlightPattern, onChange, value = '' 
                 <span className={classNames({ 'auto-resize-text-area__highlight-text': index % 2 })}>{part}</span>
               )
           )}
+          {'\n'}
         </div>
         <textarea className="auto-resize-text-area__text-area" onChange={onChange} value={value} />
       </div>

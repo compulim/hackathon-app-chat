@@ -17,11 +17,12 @@ const ROOT_CSS = css({
     position: 'fixed',
     right: 20,
 
-    '--accent': 'red'
+    '--accent': '#1BA1E2'
   },
 
   '.app-chat__bubble': {
     alignSelf: 'end',
+    borderColor: 'var(--accent)',
     borderRadius: 4,
     borderStyle: 'solid',
     borderWidth: 2,
@@ -30,18 +31,46 @@ const ROOT_CSS = css({
 
   '.app-chat__bubble--bot': {
     backgroundColor: 'var(--accent)',
-    borderColor: 'var(--accent)',
     color: 'white',
     padding: 10
   },
 
   '.app-chat__bubble--self': {
-    backgroundColor: 'white',
+    backgroundColor: 'white'
+  },
+
+  '.app-chat__reply': {
+    alignItems: 'center',
+    display: 'flex'
+  },
+
+  '.app-chat__reply-title': {
+    color: '#999',
+    fontSize: '80%',
+    margin: '10px 10px 0'
+  },
+
+  '.app-chat__send-button': {
+    appearance: 'none',
+    backgroundColor: 'var(--accent)',
     borderColor: 'var(--accent)',
+    borderStyle: 'solid',
+    borderRadius: '100%',
+    borderWidth: 2,
+    flexShrink: 0,
+    height: 40,
+    marginRight: 10,
+    opacity: 0.2,
+    padding: 0,
+    width: 40
+  },
+
+  '.app-chat__input': {
+    borderColor: 'var(--accent)',
+    color: 'var(--accent)',
     fontSize: 'inherit',
     padding: 10,
-    minWidth: 240,
-    textAlign: 'center'
+    minWidth: 240
   },
 
   '.app-chat__icon': {
@@ -76,6 +105,10 @@ const ROOT_CSS = css({
     fontFamily: 'inherit',
     fontSize: 'inherit',
     padding: '5px 10px'
+  },
+
+  '.app-chat__quick-reply:hover': {
+    background: '#eee'
   }
 });
 
@@ -84,7 +117,7 @@ const ROOT_CSS = css({
 // const INITIAL_INPUT_VALUE = 'A quick brown fox jumped over the lazy dogs.';
 
 const HIGHLIGHT_PATTERN = 'Please build an address input dialog';
-const INITIAL_INPUT_VALUE = 'Please build an address input dialog';
+const INITIAL_INPUT_VALUE = 'Please build an address input dialog in US address format';
 // const INITIAL_INPUT_VALUE = 'Please build an address input dialog for US addresses';
 
 const AppChat = () => {
@@ -97,11 +130,12 @@ const AppChat = () => {
   );
 
   const [editClicked, setEditClicked] = useState(false);
+  // const [editClicked, setEditClicked] = useState(true);
   const handleEditClick = useCallback(() => setEditClicked(true), [setEditClicked]);
 
   useEffect(() => {
     if (editClicked) {
-      const textAreaElement = document.querySelector('textarea')
+      const textAreaElement = document.querySelector('textarea');
 
       if (textAreaElement) {
         textAreaElement.focus();
@@ -114,22 +148,30 @@ const AppChat = () => {
     <div className={classNames('app-chat', ROOT_CSS)}>
       {shown && (
         <Fragment>
-          <div className="app-chat__bubble app-chat__bubble--bot">What can I do?</div>
-          <ButtonBar className="app-chat__quick-replies">
-            <button className="app-chat__quick-reply" onClick={handleEditClick} type="button">
-              Edit
-            </button>
-            <button className="app-chat__quick-reply" type="button">
-              Looks good
-            </button>
-          </ButtonBar>
+          <div className="app-chat__bubble app-chat__bubble--bot">I have generated the address input dialog.</div>
+          {!editClicked && (
+            <ButtonBar className="app-chat__quick-replies">
+              <button className="app-chat__quick-reply" onClick={handleEditClick} type="button">
+                Change my mind
+              </button>
+              <button className="app-chat__quick-reply" type="button">
+                It looks good
+              </button>
+            </ButtonBar>
+          )}
           {editClicked && (
-            <AutoResizeTextArea
-              className="app-chat__bubble app-chat__bubble--self"
-              highlightPattern={HIGHLIGHT_PATTERN}
-              onChange={handleInputChange}
-              value={inputText}
-            />
+            <div className="app-chat__bubble app-chat__bubble--self">
+              <div className="app-chat__reply-title">How do you want it to change?</div>
+              <div className="app-chat__reply">
+                <AutoResizeTextArea
+                  className="app-chat__input"
+                  highlightPattern={HIGHLIGHT_PATTERN}
+                  onChange={handleInputChange}
+                  value={inputText}
+                />
+                {/* <button className="app-chat__send-button" type="button" /> */}
+              </div>
+            </div>
           )}
         </Fragment>
       )}
