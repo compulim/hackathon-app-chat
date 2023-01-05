@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { Fragment, useCallback, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
 
 import AutoResizeTextArea from './AutoResizeTextArea';
@@ -55,7 +55,7 @@ const ROOT_CSS = css({
   },
 
   '.app_chat__icon-image': {
-    height: 32,
+    height: 32
   },
 
   '.app-chat__quick-replies': {
@@ -84,7 +84,8 @@ const ROOT_CSS = css({
 // const INITIAL_INPUT_VALUE = 'A quick brown fox jumped over the lazy dogs.';
 
 const HIGHLIGHT_PATTERN = 'Please build an address input dialog';
-const INITIAL_INPUT_VALUE = 'Please build an address input dialog for US addresses';
+const INITIAL_INPUT_VALUE = 'Please build an address input dialog';
+// const INITIAL_INPUT_VALUE = 'Please build an address input dialog for US addresses';
 
 const AppChat = () => {
   const [inputText, setInputText] = useState(INITIAL_INPUT_VALUE);
@@ -95,25 +96,41 @@ const AppChat = () => {
     [setInputText]
   );
 
+  const [editClicked, setEditClicked] = useState(false);
+  const handleEditClick = useCallback(() => setEditClicked(true), [setEditClicked]);
+
+  useEffect(() => {
+    if (editClicked) {
+      const textAreaElement = document.querySelector('textarea')
+
+      if (textAreaElement) {
+        textAreaElement.focus();
+        textAreaElement.selectionStart = inputText.length;
+      }
+    }
+  }, [editClicked]);
+
   return (
     <div className={classNames('app-chat', ROOT_CSS)}>
       {shown && (
         <Fragment>
           <div className="app-chat__bubble app-chat__bubble--bot">What can I do?</div>
           <ButtonBar className="app-chat__quick-replies">
-            <button className="app-chat__quick-reply" type="button">
+            <button className="app-chat__quick-reply" onClick={handleEditClick} type="button">
               Edit
             </button>
             <button className="app-chat__quick-reply" type="button">
               Looks good
             </button>
           </ButtonBar>
-          <AutoResizeTextArea
-            className="app-chat__bubble app-chat__bubble--self"
-            highlightPattern={HIGHLIGHT_PATTERN}
-            onChange={handleInputChange}
-            value={inputText}
-          />
+          {editClicked && (
+            <AutoResizeTextArea
+              className="app-chat__bubble app-chat__bubble--self"
+              highlightPattern={HIGHLIGHT_PATTERN}
+              onChange={handleInputChange}
+              value={inputText}
+            />
+          )}
         </Fragment>
       )}
       <button className="app-chat__icon" onClick={handleButtonClick} type="button">
