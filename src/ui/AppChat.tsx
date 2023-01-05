@@ -11,13 +11,19 @@ const ROOT_CSS = css({
   '&.app-chat': {
     bottom: 20,
     display: 'flex',
-    flexDirection: 'column',
+    // flexDirection: 'column',
     fontFamily: "Calibri, 'Helvetica Neue', Arial, sans-serif",
     gap: 20,
     position: 'fixed',
     right: 20,
 
     '--accent': '#1BA1E2'
+  },
+
+  '.app-chat__transcript': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 20
   },
 
   '.app-chat__bubble': {
@@ -46,7 +52,7 @@ const ROOT_CSS = css({
 
   '.app-chat__reply-title': {
     color: '#999',
-    fontSize: '80%',
+    fontSize: '90%',
     margin: '10px 10px 0'
   },
 
@@ -79,19 +85,20 @@ const ROOT_CSS = css({
     backgroundColor: 'var(--accent)',
     border: 0,
     borderRadius: '50%',
-    height: 64,
-    width: 64
+    height: 48,
+    width: 48
   },
 
   '.app_chat__icon-image': {
-    height: 32
+    height: 24
   },
 
   '.app-chat__quick-replies': {
     alignSelf: 'end',
     display: 'flex',
     gap: 10,
-    marginTop: -10
+    margin: 10
+    // marginTop: -10
   },
 
   '.app-chat__quick-reply': {
@@ -100,7 +107,7 @@ const ROOT_CSS = css({
     borderColor: 'var(--accent)',
     borderRadius: 'calc(1em + 10px)',
     borderStyle: 'solid',
-    borderWidth: 2,
+    borderWidth: 1,
     color: 'var(--accent)',
     fontFamily: 'inherit',
     fontSize: 'inherit',
@@ -109,6 +116,11 @@ const ROOT_CSS = css({
 
   '.app-chat__quick-reply:hover': {
     background: '#eee'
+  },
+
+  '.app-chat__bubble:not(:last-child)': {
+    opacity: 0,
+    transition: 'opacity 1s'
   }
 });
 
@@ -117,7 +129,7 @@ const ROOT_CSS = css({
 // const INITIAL_INPUT_VALUE = 'A quick brown fox jumped over the lazy dogs.';
 
 const HIGHLIGHT_PATTERN = 'Please build an address input dialog';
-const INITIAL_INPUT_VALUE = 'Please build an address input dialog in US address format';
+const INITIAL_INPUT_VALUE = 'Please build an address input dialog';
 // const INITIAL_INPUT_VALUE = 'Please build an address input dialog for US addresses';
 
 const AppChat = () => {
@@ -130,8 +142,10 @@ const AppChat = () => {
   );
 
   const [editClicked, setEditClicked] = useState(false);
+  const [submitClicked, setSubmitClicked] = useState(false);
   // const [editClicked, setEditClicked] = useState(true);
   const handleEditClick = useCallback(() => setEditClicked(true), [setEditClicked]);
+  const handleSubmit = useCallback(() => setSubmitClicked(true), [setSubmitClicked]);
 
   useEffect(() => {
     if (editClicked) {
@@ -146,9 +160,10 @@ const AppChat = () => {
 
   return (
     <div className={classNames('app-chat', ROOT_CSS)}>
-      {shown && (
-        <Fragment>
-          <div className="app-chat__bubble app-chat__bubble--bot">I have generated the address input dialog.</div>
+      <div className="app-chat__transcript">
+        {shown && (
+          <Fragment>
+            {/* <div className="app-chat__bubble app-chat__bubble--bot">I have generated the address input dialog.</div>
           {!editClicked && (
             <ButtonBar className="app-chat__quick-replies">
               <button className="app-chat__quick-reply" onClick={handleEditClick} type="button">
@@ -158,23 +173,55 @@ const AppChat = () => {
                 It looks good
               </button>
             </ButtonBar>
-          )}
-          {editClicked && (
+          )} */}
             <div className="app-chat__bubble app-chat__bubble--self">
-              <div className="app-chat__reply-title">How do you want it to change?</div>
+              <div className="app-chat__reply-title">Do you like what I generated?</div>
               <div className="app-chat__reply">
-                <AutoResizeTextArea
-                  className="app-chat__input"
-                  highlightPattern={HIGHLIGHT_PATTERN}
-                  onChange={handleInputChange}
-                  value={inputText}
-                />
-                {/* <button className="app-chat__send-button" type="button" /> */}
+                <ButtonBar className="app-chat__quick-replies">
+                  <button className="app-chat__quick-reply" onClick={handleEditClick} type="button">
+                    I changed my mind
+                  </button>
+                  <button className="app-chat__quick-reply" type="button">
+                    It looks good
+                  </button>
+                </ButtonBar>
               </div>
             </div>
-          )}
-        </Fragment>
-      )}
+            {editClicked && (
+              <div className="app-chat__bubble app-chat__bubble--self">
+                <div className="app-chat__reply-title">How do you want it to change?</div>
+                <div className="app-chat__reply">
+                  <form onSubmit={handleSubmit}>
+                    <AutoResizeTextArea
+                      className="app-chat__input"
+                      highlightPattern={HIGHLIGHT_PATTERN}
+                      onChange={handleInputChange}
+                      onSubmit={handleSubmit}
+                      value={inputText}
+                    />
+                    {/* <button className="app-chat__send-button" type="button" /> */}
+                  </form>
+                </div>
+              </div>
+            )}
+            {submitClicked && (
+              <div className="app-chat__bubble app-chat__bubble--self">
+                <div className="app-chat__reply-title">I have regenerated the dialog according to your input. How do you like it?</div>
+                <div className="app-chat__reply">
+                  <ButtonBar className="app-chat__quick-replies">
+                    <button className="app-chat__quick-reply" onClick={handleEditClick} type="button">
+                      Change my mind again
+                    </button>
+                    <button className="app-chat__quick-reply" type="button">
+                      It looks good
+                    </button>
+                  </ButtonBar>
+                </div>
+              </div>
+            )}
+          </Fragment>
+        )}
+      </div>
       <button className="app-chat__icon" onClick={handleButtonClick} type="button">
         <img alt="Bot" className="app_chat__icon-image" src="assets/bot.png" />
       </button>

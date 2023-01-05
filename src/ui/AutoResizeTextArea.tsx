@@ -1,7 +1,9 @@
 import { css } from '@emotion/css';
 
-import type { ChangeEventHandler } from 'react';
+import { useEffect, useRef } from 'react';
 import classNames from 'classnames';
+
+import type { ChangeEventHandler, KeyboardEventHandler } from 'react';
 
 const ROOT_CSS = css({
   '&.auto-resize-text-area': {},
@@ -48,6 +50,7 @@ type Props = {
   className?: string;
   highlightPattern?: RegExp | string;
   onChange?: ChangeEventHandler<HTMLTextAreaElement>;
+  onSubmit?: () => void;
   value?: string;
 };
 
@@ -81,7 +84,9 @@ function findOccurrence(pattern: RegExp | string): (value: string) => RegExpExec
   };
 }
 
-const AutoResizeTextArea = ({ className, highlightPattern, onChange, value = '' }: Props) => {
+const AutoResizeTextArea = ({ className, highlightPattern, onChange, onSubmit, value = '' }: Props) => {
+  const textAreaRef = useRef<HTMLTextAreaElement>();
+
   let parts;
 
   if (highlightPattern) {
@@ -106,6 +111,24 @@ const AutoResizeTextArea = ({ className, highlightPattern, onChange, value = '' 
     parts = [value];
   }
 
+  useEffect(() => {
+    const handleKeyPress: KeyboardEventHandler<HTMLTextAreaElement> = event => {
+      const { key } = event;
+
+      if (key === 'Enter') {
+        event.preventDefault();
+
+        onSubmit?.();
+      }
+    };
+
+    textAreaRef.current?.addEventListener?.('keypress', handleKeyPress as any);
+
+    return () => {
+      textAreaRef.current?.removeEventListener?.('keypress', handleKeyPress as any);
+    };
+  }, [textAreaRef]);
+
   return (
     <div className={classNames('auto-resize-text-area', ROOT_CSS, className)}>
       <div className="auto-resize-text-area__box">
@@ -118,7 +141,7 @@ const AutoResizeTextArea = ({ className, highlightPattern, onChange, value = '' 
           )}
           {'\n'}
         </div>
-        <textarea className="auto-resize-text-area__text-area" onChange={onChange} value={value} />
+        <textarea className="auto-resize-text-area__text-area" onChange={onChange} ref={textAreaRef} value={value} />
       </div>
     </div>
   );
